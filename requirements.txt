@@ -1,0 +1,6 @@
+Office365-REST-Python-Client
+pyyaml
+feedgen
+fastapi
+markdown
+uvicorn
