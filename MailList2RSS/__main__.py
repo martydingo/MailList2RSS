@@ -13,7 +13,7 @@ configuration = safe_load(open(arguments.config))
 
 
 def start_api():
-    uvicorn.run(API.api)
+    uvicorn.run(API.api, host="0.0.0.0")
 
 
 def start_rss_generation(configuration):
