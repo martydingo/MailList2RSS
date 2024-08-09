@@ -1,4 +1,5 @@
 from office365.graph_client import GraphClient
+from office365.runtime.odata.query_options import QueryOptions
 from pprint import pprint
 from feedgen.feed import FeedGenerator
 import datetime
@@ -37,15 +38,19 @@ class MailList2RSS:
                 self.__poll_office365__()
 
     def __poll_office365__(self):
-        messages = (
+        queryOptions = QueryOptions(order_by="desc")
+
+        query = (
             self.client.users[self.configuration["inbox"]]
             .mail_folders[self.configuration["folder_id"]]
             .messages.get_all()
-            .execute_query()
         )
+        query._query_options = queryOptions
+        messages = query.execute_query()
+
         rss_feed = FeedGenerator()
         for message in messages:
-            rss_entry = rss_feed.add_entry()
+            rss_entry = rss_feed.add_entry(order="append")
             try:
                 mailingListSubjectList = message.subject.split("[")[1].split("]")
                 mailingListTopic = mailingListSubjectList[0]
@@ -58,7 +63,7 @@ class MailList2RSS:
 
             rss_entry.id(message.web_link)
             rss_entry.link({"href": message.web_link})
-            rss_entry.title(message.subject)
+            rss_entry.title(message.subject.replace("Re:", "").strip())
             rss_entry.pubDate(
                 message.created_datetime.replace(tzinfo=datetime.timezone.utc)
             )
