@@ -16,6 +16,7 @@ class MailList2RSS:
     def __init__(self, configuration) -> None:
         method = configuration["method"]
         self.configuration = configuration[method]
+        self.feed_configuration = configuration["rss_feed"]
         if method == "office365":
             self.__start_polling_o365__()
 
@@ -98,9 +99,9 @@ class MailList2RSS:
             # print(mailingListTopic)
             # print(mailingListSubject)
             # print(contributors)
-        rss_feed.title("Mailing Lists")
-        rss_feed.description("...")
-        rss_feed.link({"href": "dingo.foo"})
+        rss_feed.title(self.feed_configuration["title"])
+        rss_feed.description(self.feed_configuration["description"])
+        rss_feed.link({"href": self.feed_configuration["link"]})
         # rssfeed = rss_feed.rss_str(pretty=True)
         # print(rssfeed)
         rssfeed_file = rss_feed.rss_file("mailing-list.rss")
